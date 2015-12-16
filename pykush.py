@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-''' Python interface for Yepkit's YKUSH usb hub '''
+''' Python interface for Yepkit's YKUSH usb hub
+
+	Currently tested and working on Ubuntu
+'''
 
 import usb.core
 import usb.util
@@ -18,8 +21,6 @@ class PYKUSH(object):
 		if self.dev is None:
 		    raise ValueError('YKUSH not found')
 
-		print('Device Connected!')
-
 		# Detach kernel driver if possible
 		try:
 			self.dev.detach_kernel_driver(0)
@@ -32,7 +33,7 @@ class PYKUSH(object):
 		cfg = self.dev.get_active_configuration()
 		intf = cfg[(0,0)]
 
-		# print('Serial Number: ' + str(self.dev.serial_number))
+		self.serial_number = str(self.dev.serial_number))
 
 		self.ep = usb.util.find_descriptor(
 		    intf,
@@ -48,12 +49,9 @@ class PYKUSH(object):
 		out_buff = [0] * 64
 		out_buff[0] = command
 
-		print('Attempting Write')
-		# write the data
 		self.ep.write(out_buff, timeout=5000)
-
-		print('Attempting Read')
 		in_buff = self.ep.read(64, timeout=120000)
+		# TODO - something with return value...
 
 	def enable_all(self):
 		self.send_command(0x1a)
