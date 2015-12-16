@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 ''' Python interface for Yepkit's YKUSH usb hub
 
-    Currently tested and working on Ubuntu
+    Currently tested and working on Ubuntu.
 '''
 
 import usb.core
 import usb.util
+import argparse
+
 
 class PYKUSH(object):
 
@@ -16,7 +18,8 @@ class PYKUSH(object):
     def __init__(self, serial_number=None):
         self.serial_number = serial_number
 
-        self.dev = usb.core.find(idVendor=self.__VENDOR_ID, idProduct=self.__PRODUCT_ID)
+        self.dev = usb.core.find(
+            idVendor=self.__VENDOR_ID, idProduct=self.__PRODUCT_ID)
 
         if self.dev is None:
             raise ValueError('YKUSH not found')
@@ -25,27 +28,27 @@ class PYKUSH(object):
         try:
             self.dev.detach_kernel_driver(0)
         except usb.core.USBError:
-            print('Must already be detached...')
+            # Must already be detached
+            pass
 
         self.dev.set_configuration()
 
         # get an endpoint instance
         cfg = self.dev.get_active_configuration()
-        intf = cfg[(0,0)]
+        intf = cfg[(0, 0)]
 
-        self.serial_number = str(self.dev.serial_number))
+        self.serial_number = str(self.dev.serial_number)
 
         self.ep = usb.util.find_descriptor(
             intf,
             # match the first OUT endpoint
-            custom_match = \
-            lambda e: \
+            custom_match=lambda e: \
                 usb.util.endpoint_direction(e.bEndpointAddress) == \
                 usb.util.ENDPOINT_OUT)
 
         assert self.ep is not None
 
-    def send_command(self ,command):
+    def send_command(self, command):
         out_buff = [0] * 64
         out_buff[0] = command
 
@@ -72,3 +75,29 @@ class PYKUSH(object):
 
         cmd = 0x00 | port
         self.send_command(cmd)
+
+if __name__ == "__main__":
+    ports = ['1', '2', '3', 'a']
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-u', choices=ports, help='Port to turn on.')
+    parser.add_argument('-d', choices=ports, help='Port to turn off')
+
+    args = parser.parse_args()
+
+    if args.u or args.d:
+        ykush = PYKUSH()
+        if args.u:
+            if args.u == 'a':
+                ykush.enable_all()
+            else:
+                ykush.enable(int(args.u))
+
+        if args.d:
+            if args.d == 'a':
+                ykush.disable_all()
+            else:
+                ykush.disable(int(args.d))
+    else:
+        print('Nothing to do')
