@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-''' Python interface for Yepkit's YKUSH usb hub
+''' Python interface for Yepkit's USB Switched Hub
+
+    Functionality limited to turning ports on/off a single YKUSH
 
     Currently tested and working on Ubuntu.
 '''
@@ -45,8 +47,8 @@ class PYKUSH(object):
             intf,
             # match the first OUT endpoint
             custom_match=lambda e: \
-                usb.util.endpoint_direction(e.bEndpointAddress) == \
-                usb.util.ENDPOINT_OUT)
+            usb.util.endpoint_direction(e.bEndpointAddress) == \
+            usb.util.ENDPOINT_OUT)
 
         assert self.ep is not None
 
