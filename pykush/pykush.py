@@ -6,7 +6,6 @@
 
 import usb.core
 import usb.util
-import argparse
 
 
 class PYKUSH(object):
@@ -75,29 +74,3 @@ class PYKUSH(object):
 
         cmd = 0x00 | port
         self.send_command(cmd)
-
-if __name__ == "__main__":
-    ports = ['1', '2', '3', 'a']
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-u', choices=ports, help='Port to turn on.')
-    parser.add_argument('-d', choices=ports, help='Port to turn off')
-
-    args = parser.parse_args()
-
-    if args.u or args.d:
-        ykush = PYKUSH()
-        if args.u:
-            if args.u == 'a':
-                ykush.enable_all()
-            else:
-                ykush.enable(int(args.u))
-
-        if args.d:
-            if args.d == 'a':
-                ykush.disable_all()
-            else:
-                ykush.disable(int(args.d))
-    else:
-        print('Nothing to do')
