@@ -1,3 +1,5 @@
 # pykush - Python interface for the Yepkit USB Switchable Hub
 
-Doesn't really work yet, but I'm trying :D
+Basic port enable/disable working in Ubuntu!
+
+For more YKUSH information, check out: https://www.yepkit.com/products/ykush

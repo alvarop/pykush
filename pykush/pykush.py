@@ -36,7 +36,10 @@ class PYKUSH(object):
         cfg = self.dev.get_active_configuration()
         intf = cfg[(0, 0)]
 
-        self.serial_number = str(self.dev.serial_number)
+        if self.dev.serial_number:
+            self.serial_number = str(self.dev.serial_number)
+        else:
+            self.serial_number = None
 
         self.ep = usb.util.find_descriptor(
             intf,
